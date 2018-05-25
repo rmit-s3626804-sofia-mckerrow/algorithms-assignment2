@@ -134,6 +134,7 @@ public class GuessWho
             //
             // Game loop
             //
+            
             boolean player1Finished = false;
             boolean player2Finished = false;
 

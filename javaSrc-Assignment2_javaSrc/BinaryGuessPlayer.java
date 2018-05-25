@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Binary-search based guessing player.

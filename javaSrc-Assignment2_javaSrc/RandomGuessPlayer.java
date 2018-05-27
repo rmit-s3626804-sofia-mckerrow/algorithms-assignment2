@@ -1,7 +1,10 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Random guessing player. This player is for task B.
@@ -26,6 +29,9 @@ public class RandomGuessPlayer implements Player {
 	 *             implementation exits gracefully if an IOException is thrown.
 	 */
 	private Map<String, ArrayList<String>> people;
+	private String person;
+	private String attribute;
+	private String value;
 
 	public RandomGuessPlayer(String gameFilename, String chosenName) throws IOException {
 		people = new HashMap<String, ArrayList<String>>();
@@ -39,8 +45,8 @@ public class RandomGuessPlayer implements Player {
 
 			ArrayList<String> keys = new ArrayList<String>();
 			ArrayList<String> values = new ArrayList<String>();
-			String key = null;
-			String value = null;
+			String k = null;
+			String v = null;
 
 			while ((str = bufferedReader.readLine()) != null) {
 				counter++;
@@ -49,17 +55,17 @@ public class RandomGuessPlayer implements Player {
 				if (counter >= 11) {
 					String string = str;
 					if (string.contains("P")) {
-						key = str;
-						keys.add(key);
+						k = str;
+						keys.add(k);
 					} else if (str.length() > 2) {
-						value = str;
-						values.add(value);
+						v = str;
+						values.add(v);
 					}
 				}
 				// Add person and attribute values to hashmap
 				if (values.size() == 9) {
 					ArrayList<String> temp = new ArrayList<String>(values);
-					people.put(key, temp);
+					people.put(k, temp);
 					// Clear values array before moving on to next person in file
 					values.clear();
 				}
@@ -73,9 +79,40 @@ public class RandomGuessPlayer implements Player {
 	} // end of RandomGuessPlayer()
 
 	public Guess guess() {
+		ArrayList<String> temp, attributes = new ArrayList<String>();
+		
+		// Get all the possible attribute-value pairs from the group of current candidate people
+		for (Map.Entry<String, ArrayList<String>> entry : people.entrySet()) {
+			temp = entry.getValue();
+			attributes.addAll(temp);
+		}
+		
+		// Get list of possible attribute-value pairs without duplicates
+		Set<String> noDuplicates = new LinkedHashSet<String>(attributes);
+		attributes.clear();
+		attributes.addAll(noDuplicates);
+		
+		if (people.size() > 1) {
+			// Get a random attribute-value pair from attributes arraylist
+			Random r = new Random();
+			String pair = attributes.get(r.nextInt(attributes.size()));
+			String[] pairSplit;
+			pairSplit = pair.split("\\s");
+			attribute = pairSplit[0];
+			value = pairSplit[1];
+			return new Guess(Guess.GuessType.Attribute, attribute, value);
+		}
+		else if (people.size() == 1) {
+			// Get name of person for guess
+			for (Map.Entry<String, ArrayList<String>> entry : people.entrySet()) {
+				person = entry.getKey();
+			}
+			return new Guess(Guess.GuessType.Person, "", person);
+		}
+		else {
+			return new Guess(Guess.GuessType.Person, "", "Placeholder");
+		}
 
-		// placeholder, replace
-		return new Guess(Guess.GuessType.Person, "", "Placeholder");
 	} // end of guess()
 
 	public boolean answer(Guess currGuess) {

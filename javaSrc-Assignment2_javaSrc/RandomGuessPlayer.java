@@ -204,7 +204,6 @@ public class RandomGuessPlayer implements Player {
 		String guessAttribute = currGuess.getAttribute().toString();
 		String guessValue = currGuess.getValue().toString();
 		String guess = guessAttribute + " " + guessValue;
-		System.out.println(playerPerson);
 		
 		// Check if the player's chosen person has the guessed attribute-value pair
 		for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {

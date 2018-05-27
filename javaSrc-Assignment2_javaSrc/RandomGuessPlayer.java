@@ -38,13 +38,16 @@ public class RandomGuessPlayer implements Player {
 	private String person;
 	private String attribute;
 	private String value;
-	private int turnCount;
+	private static int nextTurn = 1;
+	private int turnCount = 1;
+	
 
 	public RandomGuessPlayer(String gameFilename, String chosenName) throws IOException {
 		playerPerson = chosenName;
 		people = new HashMap<String, ArrayList<String>>();
-		turnCount = 1;
 		int counter = 0;
+		turnCount = nextTurn;
+		nextTurn++;
 
 		try {
 			FileReader reader = new FileReader(gameFilename);
@@ -95,13 +98,14 @@ public class RandomGuessPlayer implements Player {
 
 		// If turnCount is odd, it is player 1's turn
 		if ((turnCount % 2) != 0) {
-			currGuess = getGuess(peopleP2);
+			currGuess = getGuess(peopleP1);
 		}
 		// If turnCount is even, it is player 2's turn
 		else if ((turnCount % 2) == 0) {
-			currGuess = getGuess(peopleP1);
+			currGuess = getGuess(peopleP2);
 		}
-		turnCount++;
+		turnCount = turnCount + 2;
+		
 		return currGuess;
 	} // end of guess()
 
@@ -112,22 +116,22 @@ public class RandomGuessPlayer implements Player {
 		if ((turnCount % 2) != 0) {
 			// If the player's guess is an attribute-value pair
 			if (currGuess.getType().toString().equals("Attribute")) {
-				answer = attributeAnswer(currGuess, peopleP2);
+				answer = attributeAnswer(currGuess, peopleP1);
 			}
 			// If the player's guess is a person
 			else if (currGuess.getType().toString().equals("Person")) {
-				answer = personAnswer(currGuess, peopleP2);
+				answer = personAnswer(currGuess, peopleP1);
 			}
 		}
 		// If turnCount is even, it is player 1's turn to answer
 		else if ((turnCount % 2) == 0) {
 			// If the player's guess is an attribute-value pair
 			if (currGuess.getType().toString().equals("Attribute")) {
-				answer = attributeAnswer(currGuess, peopleP1);
+				answer = attributeAnswer(currGuess, peopleP2);
 			}
 			// If the player's guess is a person
 			else if (currGuess.getType().toString().equals("Person")) {
-				answer = personAnswer(currGuess, peopleP1);
+				answer = personAnswer(currGuess, peopleP2);
 			}
 		}
 
@@ -200,7 +204,8 @@ public class RandomGuessPlayer implements Player {
 		String guessAttribute = currGuess.getAttribute().toString();
 		String guessValue = currGuess.getValue().toString();
 		String guess = guessAttribute + " " + guessValue;
-
+		System.out.println(playerPerson);
+		
 		// Check if the player's chosen person has the guessed attribute-value pair
 		for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
 			if (playerPerson.equals(entry.getKey())) {
@@ -220,7 +225,7 @@ public class RandomGuessPlayer implements Player {
 			ArrayList<String> pairs = entry.getValue();
 			// If the answer is true, get a list of people to remove from the hashmap who
 			// don't have the guessed attribute-value pair
-			if (answer = true) {
+			if (answer == true) {
 				if (!pairs.contains(guess)) {
 					person = entry.getKey();
 					peopleToRemove.add(person);
@@ -228,7 +233,7 @@ public class RandomGuessPlayer implements Player {
 			}
 			// If the answer is false, get a list of people to remove from the hashmap who
 			// have the guessed attribute-value pair
-			else if (answer = false) {
+			else {
 				if (pairs.contains(guess)) {
 					person = entry.getKey();
 					peopleToRemove.add(person);
